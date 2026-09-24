@@ -3,6 +3,7 @@ package github.com.Produto.controller;
 import github.com.Produto.dto.ProdutoRequestDTO;
 import github.com.Produto.dto.ProdutoResponseDTO;
 import github.com.Produto.service.ProdutoService;
+import github.com.Produto.Eventos.ProdutoEventos;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,11 @@ import java.util.List;
 public class ProdutoController {
 
     private final ProdutoService produtoService;
+    private final ProdutoEventos produtoEventos;
 
-    public ProdutoController(ProdutoService produtoService) {
+    public ProdutoController(ProdutoService produtoService, ProdutoEventos produtoEventos) {
         this.produtoService = produtoService;
+        this.produtoEventos = produtoEventos;
     }
 
     @GetMapping
@@ -44,5 +47,12 @@ public class ProdutoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletar(@PathVariable Long id) {
         produtoService.deletar(id);
+    }
+
+    @PostMapping("/publicar-evento")
+    @ResponseStatus(HttpStatus.OK)
+    public String publicarEvento(@Valid @RequestBody ProdutoRequestDTO dto) {
+        produtoEventos.publicarEvento(dto);
+        return "Evento publicado com sucesso no RabbitMQ";
     }
 }
